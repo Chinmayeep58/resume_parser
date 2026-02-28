@@ -1,8 +1,4 @@
-# Resume Parser -- Concepts Guide
-
-This document explains the **core concepts required to understand the
-resume parser code**, including Regex, NLP, PDF processing, and text
-processing.
+# Resume Parser
 
 ------------------------------------------------------------------------
 
