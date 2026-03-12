@@ -1,275 +1,352 @@
-# Resume Parser
+# Resume Parser & Analysis System
 
-------------------------------------------------------------------------
+**Last Updated:** March 2026
 
-# 1. PDF Text Extraction
+## Overview
 
-## What is a PDF?
+This project implements a **Resume Parsing and Analysis System** capable of extracting structured information from resumes in multiple formats. The system automatically processes resumes and extracts important details such as **name, email, phone number, skills, education, and experience**.
 
-A PDF (Portable Document Format) stores text as **positioned graphical
-elements**, not plain text like `.txt` files.
+The parser supports multiple input formats including:
 
-Computers cannot directly read it as normal text.
+* PDF resumes
+* DOCX resumes
+* Image-based resumes (JPG, PNG, JPEG)
 
-## Solution: PDF parsing libraries
+The goal of this project is to demonstrate how **Natural Language Processing (NLP), OCR, and rule-based extraction** can be combined to automatically structure unformatted resume data.
 
-We use:
+This repository is designed for **learning, experimentation, and extension**, especially for projects related to **ATS systems, recruitment automation, and resume analytics**.
 
-``` python
-from pdfminer.high_level import extract_text
+---
+
+## Generic Resume Parsing Architecture
+
+A typical resume parsing system follows the pipeline below:
+
+Resume Input → Text Extraction → Text Cleaning & Preprocessing → Information Extraction → Structured Output → Feedback & Improvement
+
+Core components:
+
+1. Resume Input (PDF / DOCX / Image)
+2. Text Extraction (PDF parsing / OCR)
+3. Text Cleaning and Normalization
+4. NLP-based Entity Extraction
+5. Structured Resume Output
+6. Feedback Loop for improving extraction accuracy
+
+---
+
+## System Workflow
+
+### Resume Upload
+
+Users upload resumes through the **Streamlit frontend interface**.
+
+Supported formats:
+
+* `.pdf`
+* `.docx`
+* `.png`
+* `.jpg`
+* `.jpeg`
+
+---
+
+### Text Extraction
+
+Different extraction pipelines are used depending on the resume format.
+
+PDF resumes
+→ Extracted using **pdfminer**
+
+DOCX resumes
+→ Extracted using **python-docx**
+
+Image-based resumes
+→ Extracted using **Tesseract OCR**
+
+This ensures the system can handle both **digital resumes and scanned resumes**.
+
+---
+
+### Text Preprocessing
+
+The extracted text is cleaned and normalized to improve extraction accuracy.
+
+Operations include:
+
+* Removing unnecessary whitespace
+* Normalizing line breaks
+* Preparing text for NLP processing
+
+---
+
+### Information Extraction
+
+The system extracts key resume information:
+
+**Personal Information**
+
+* Name (using SpaCy Named Entity Recognition)
+* Email address (regex)
+* Phone number (regex)
+
+**Skills**
+
+Detected using a predefined skill set including examples such as:
+
+* Python
+* SQL
+* Excel
+* Power BI
+* Machine Learning
+* Data Science
+
+**Education**
+
+Lines containing education-related keywords such as:
+
+* Bachelor
+* Master
+* B.Sc
+* M.Sc
+* PhD
+* B.E
+* M.E
+
+**Experience**
+
+Sections containing keywords like:
+
+* Experience
+* Work
+* Internship
+* Employment
+
+---
+
+### Structured Resume Output
+
+The extracted information is returned as a structured dictionary:
+
+Example output:
+
 ```
-
-**pdfminer.six** reads the internal structure and reconstructs text.
-
-Concept learned: - File parsing - Document processing
-
-------------------------------------------------------------------------
-
-# 2. Text Preprocessing
-
-Raw extracted text contains:
-
--   extra spaces
--   extra newlines
--   formatting noise
-
-We clean it using Regex.
-
-Concepts involved:
-
--   String processing
--   Data cleaning
--   Preprocessing pipeline
-
-Why important: Clean data improves extraction accuracy.
-
-------------------------------------------------------------------------
-
-# 3. Regular Expressions (Regex)
-
-Regex is a **pattern matching language** used to search text.
-
-Python library:
-
-``` python
-import re
-```
-
-## Example
-
-Email pattern:
-
-``` python
-\S+@\S+
-```
-
-Meaning:
-
-  Symbol       Meaning
-  ------------ ---------------------
-  `\S`{=tex}   non‑space character
-  \+           one or more
-  @            literal @ symbol
-
-Matches:
-
-example@gmail.com
-
-------------------------------------------------------------------------
-
-## Phone regex example
-
-``` python
-\+?\d[\d\s\-\(\)]{8,15}
-```
-
-Concepts:
-
-  Symbol               Meaning
-  -------------------- --------------------
-  +?                   optional plus
-  `\d |`{=tex} digit   
-  \[\]                 allowed characters
-  {8,15}               length range
-
-Regex is widely used in:
-
--   resume parsing
--   validation
--   web scraping
-
-------------------------------------------------------------------------
-
-# 4. Natural Language Processing (NLP)
-
-NLP allows computers to understand human language.
-
-Library used:
-
-``` python
-import spacy
-```
-
-------------------------------------------------------------------------
-
-## Named Entity Recognition (NER)
-
-NER identifies real‑world entities such as:
-
--   PERSON
--   ORGANIZATION
--   LOCATION
--   DATE
-
-Example:
-
-Input: John Smith works at Google
-
-Output:
-
-John Smith → PERSON\
-Google → ORG
-
-Used to extract names from resumes.
-
-------------------------------------------------------------------------
-
-# 5. Tokenization
-
-Tokenization splits text into smaller units called tokens.
-
-Example:
-
-Input:
-
-Machine learning engineer
-
-Tokens:
-
-Machine\
-learning\
-engineer
-
-spaCy performs tokenization automatically.
-
-------------------------------------------------------------------------
-
-# 6. Keyword Extraction
-
-Simple method:
-
-Check if predefined keywords exist.
-
-Example:
-
-skills list:
-
-python\
-sql\
-excel
-
-If found → add to output.
-
-Concept:
-
-Rule‑based information extraction
-
-------------------------------------------------------------------------
-
-# 7. String Processing
-
-Python allows:
-
-Split text:
-
-``` python
-text.split('\n')
-```
-
-Convert case:
-
-``` python
-text.lower()
-```
-
-Remove spaces:
-
-``` python
-text.strip()
-```
-
-Concept:
-
-Text normalization
-
-------------------------------------------------------------------------
-
-# 8. Data Structures
-
-## Lists
-
-Store multiple values
-
-Example:
-
-``` python
-skills = ['python','sql']
-```
-
-------------------------------------------------------------------------
-
-## Dictionaries
-
-Store structured data
-
-Example:
-
-``` python
-resume = {
- "name":"John",
- "skills":["python"]
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "phone": "+91 9876543210",
+  "skills": ["Python", "SQL", "Machine Learning"],
+  "education": ["Bachelor of Technology in Computer Science"],
+  "experience": ["Software Intern at ABC Company"]
 }
 ```
 
-Used in APIs and databases.
+This structured output can be used in:
 
-------------------------------------------------------------------------
+* Applicant Tracking Systems (ATS)
+* Candidate ranking systems
+* Job recommendation engines
+* HR automation tools
 
-# 9. Information Extraction Pipeline
+---
 
-This project follows a pipeline:
+## Feedback Loop & Quality Improvement
 
-Document\
-↓\
-Text extraction\
-↓\
-Cleaning\
-↓\
-Pattern matching (regex)\
-↓\
-NLP extraction\
-↓\
-Structured output
+To improve the quality of extracted results, the system can incorporate a **feedback loop**.
 
-This is called:
+Examples of feedback signals:
 
-Information Extraction System
+* User correction of extracted fields
+* Validation of extracted skills
+* Manual review by recruiters
 
-------------------------------------------------------------------------
+This feedback can be used to:
 
-# 10. Why NLP is needed
+* Improve skill detection
+* Refine regex patterns
+* Train improved NLP models
 
-Regex works only for fixed patterns.
+Over time this leads to **more accurate resume parsing**.
 
-Names vary a lot.
+---
 
-Example:
+## Repository Structure
 
-Dr. John A. Smith\
-John Smith
+```
+resume-parser/
+│
+├── app.py                # Streamlit frontend interface
+├── extractor.py          # Resume text extraction logic
+├── parser.py             # Resume information extraction
+│
+├── uploads/              # Uploaded resume files
+│
+├── tests/                # Unit tests
+│
+├── requirements.txt
+└── README.md
+```
 
-Regex fails.
+---
 
-NLP understands context.
+## Installation
 
-------------------------------------------------------------------------
+Clone the repository:
+
+```
+git clone https://github.com/<your-username>/resume-parser.git
+cd resume-parser
+```
+
+Create a virtual environment:
+
+```
+python -m venv venv
+```
+
+Activate the environment:
+
+Windows
+
+```
+venv\Scripts\activate
+```
+
+Linux / Mac
+
+```
+source venv/bin/activate
+```
+
+Install dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+Install SpaCy language model:
+
+```
+python -m spacy download en_core_web_sm
+```
+
+Install Tesseract OCR (required for image-based resumes):
+
+https://github.com/UB-Mannheim/tesseract/wiki
+
+---
+
+## Running the Application
+
+Run the Streamlit application:
+
+```
+streamlit run app.py
+```
+
+The application will launch at:
+
+```
+http://localhost:8501
+```
+
+Users can upload resumes and view the extracted results through the web interface.
+
+---
+
+## Data Sources
+
+This project **does not include resume datasets** in the repository.
+
+Users interested in experimentation can explore publicly available datasets such as:
+
+Resume datasets
+
+* Kaggle Resume Dataset
+  https://www.kaggle.com
+
+Job description datasets
+
+* Kaggle Job Postings Dataset
+  https://www.kaggle.com
+
+These datasets can be used to test and extend the parser.
+
+---
+
+## Code Quality & Documentation
+
+The codebase follows good software engineering practices:
+
+* Clear function naming
+* Modular architecture
+* Inline documentation
+* Separation of extraction and parsing logic
+
+Recommended additions:
+
+* Unit tests for parsing functions
+* Additional logging for debugging
+* Improved NLP-based entity extraction
+
+Unit tests can be run using:
+
+```
+pytest
+```
+
+---
+
+## Future Enhancements
+
+Possible extensions for this project include:
+
+* Advanced NLP-based skill extraction
+* Resume scoring against job descriptions
+* Candidate ranking system
+* Automatic skill gap detection
+* Job recommendation system
+* Resume quality scoring
+* Deep learning-based NER models
+* ATS compatibility analysis
+* Resume summarization using LLMs
+
+These enhancements can transform the system into a **complete AI-powered recruitment assistant**.
+
+---
+
+## Collaboration
+
+This repository is open for collaboration.
+
+Contributors are welcome to:
+
+* Submit pull requests
+* Suggest improvements
+* Add new features
+* Improve extraction accuracy
+
+You are also encouraged to **fork the repository and build new applications on top of this system**.
+
+---
+
+## References
+
+Useful resources for deeper understanding:
+
+SpaCy NLP Documentation
+https://spacy.io
+
+Tesseract OCR Documentation
+https://tesseract-ocr.github.io
+
+PDFMiner Documentation
+https://pdfminersix.readthedocs.io
+
+Streamlit Documentation
+https://streamlit.io
+
+---
+
+
+Feel free to open an issue for questions, improvements, or collaboration.
