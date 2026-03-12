@@ -1,3 +1,7 @@
 /.ipynb_checkpoints
 
 *.pdf
+
+/uploads
+
+/__pycache__
